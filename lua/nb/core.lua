@@ -99,6 +99,16 @@ function M.notebook_of(filepath)
   return relative:match("^([^/]+)/")
 end
 
+-- ファイルパスから所属 notebook内のサブフォルダパスを返す（nb 配下でなければ nil）
+function M.folder_of(filepath)
+  local nb_dir = M.dir()
+  if not filepath:match("^" .. vim.pesc(nb_dir) .. "/") then
+    return nil
+  end
+  local relative = filepath:sub(#nb_dir + 2)
+  return relative:match("^[^/]+/(.+)/[^/]+$")
+end
+
 -- `nb browse` の --original URL を実ファイルパスに変換（対象外なら nil）
 function M.resolve_browse_url(src)
   local pattern = "^http://localhost:" .. config.options.browse_port .. "/%-%-original/([^/]+)/(.+)$"
