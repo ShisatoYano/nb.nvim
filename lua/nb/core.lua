@@ -272,7 +272,7 @@ function M.import_file(file_path, notebook, new_filename, folder)
   end
 
   local notebook_dir = M.dir() .. "/" .. notebook
- 
+
   -- ファイルコピー先のパス
   local copy_dir
   if folder then
@@ -289,7 +289,7 @@ function M.import_file(file_path, notebook, new_filename, folder)
     return nil, "Copy failed: " .. (err or "unknown")
   end
 
-  -- gitから見たnotebookルート相対のパス 
+  -- gitから見たnotebookルート相対のパス
   local relative_filename
   if folder then
     relative_filename = folder .. "/" .. final_filename
