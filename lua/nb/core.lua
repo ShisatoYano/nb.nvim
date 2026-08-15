@@ -237,7 +237,7 @@ end
 -- 画像（など）をnotebookにインポートする
 -- ファイルコピーは同期、git commit はバックグラウンド非同期
 -- 戻り値: (final_filename, err)
-function M.import_file(file_path, notebook, new_filename)
+function M.import_file(file_path, notebook, new_filename, folder)
   if not file_path or file_path == "" then
     return nil, "No path provided"
   end
@@ -272,15 +272,31 @@ function M.import_file(file_path, notebook, new_filename)
   end
 
   local notebook_dir = M.dir() .. "/" .. notebook
+ 
+  -- ファイルコピー先のパス
+  local copy_dir
+  if folder then
+    copy_dir = notebook_dir .. "/" .. folder
+  else
+    copy_dir = notebook_dir
+  end
+
   local dst_path
-  final_filename, dst_path = resolve_collision(notebook_dir, final_filename)
+  final_filename, dst_path = resolve_collision(copy_dir, final_filename)
 
   local ok, err = vim.uv.fs_copyfile(expanded_path, dst_path)
   if not ok then
     return nil, "Copy failed: " .. (err or "unknown")
   end
 
-  git_commit_async(notebook_dir, final_filename, "Import: " .. final_filename)
+  -- gitから見たnotebookルート相対のパス 
+  local relative_filename
+  if folder then
+    relative_filename = folder .. "/" .. final_filename
+  else
+    relative_filename = final_filename
+  end
+  git_commit_async(notebook_dir, relative_filename, "Import: " .. relative_filename)
 
   return final_filename
 end
