@@ -177,6 +177,8 @@ function M.import_image()
     return
   end
 
+  local current_folder = nb.folder_of(vim.fn.expand("%:p"))
+
   -- ファイル名プロンプト → import → リンク挿入の共通処理
   local function complete_import(image_path, cleanup_src, default_filename)
     local prompt = default_filename and "Filename (empty for timestamp): " or "Filename (empty to keep original): "
@@ -184,7 +186,7 @@ function M.import_image()
       if (not new_filename or new_filename == "") and default_filename then
         new_filename = default_filename
       end
-      local filename, err = nb.import_file(image_path, current_notebook, new_filename)
+      local filename, err = nb.import_file(image_path, current_notebook, new_filename, current_folder)
       if cleanup_src then
         os.remove(image_path)
       end
